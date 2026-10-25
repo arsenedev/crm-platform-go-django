@@ -1,0 +1,45 @@
+AUTH
+
+POST /auth/login
+
+--------------------------------
+
+USERS
+
+GET    /api/v1/users
+
+GET    /api/v1/users/:id
+
+POST   /api/v1/users
+
+PUT    /api/v1/users/:id
+
+DELETE /api/v1/users/:id
+
+--------------------------------
+
+CUSTOMERS
+
+GET    /api/v1/customers
+
+GET    /api/v1/customers/:id
+
+POST   /api/v1/customers
+
+PUT    /api/v1/customers/:id
+
+DELETE /api/v1/customers/:id
+
+--------------------------------
+
+CONTACTS
+
+GET    /api/v1/contacts
+
+POST   /api/v1/contacts
+
+--------------------------------
+
+SYSTEM
+
+GET    /healthz

@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2 class="mb-4">
+    Dashboard
+</h2>
+
+<div class="row g-3">
+
+    <div class="col-md-3">
+        <div class="card text-center shadow-sm">
+            <div class="card-body">
+                <h2>{{ users_count }}</h2>
+                <p class="text-muted">Users</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card text-center shadow-sm">
+            <div class="card-body">
+                <h2>{{ customers_count }}</h2>
+                <p class="text-muted">Customers</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card text-center shadow-sm">
+            <div class="card-body">
+                <h2>{{ contacts_count }}</h2>
+                <p class="text-muted">Contacts</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card text-center shadow-sm">
+            <div class="card-body">
+                <h2>{{ audit_count }}</h2>
+                <p class="text-muted">Audit Logs</p>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

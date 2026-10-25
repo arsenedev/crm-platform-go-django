@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between mb-3">
+
+    <h2>Contacts</h2>
+
+    <a
+        href="/contacts/create/"
+        class="btn btn-success">
+        Create Contact
+    </a>
+
+</div>
+
+<div class="table-responsive">
+
+<table class="table table-striped">
+
+    <thead>
+
+        <tr>
+            <th>Firstname</th>
+            <th>Lastname</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Created At</th>
+            <th></th>
+        </tr>
+
+    </thead>
+
+    <tbody>
+
+    {% for contact in contacts %}
+
+        <tr>
+
+            <td>{{ contact.firstname }}</td>
+            <td>{{ contact.lastname }}</td>
+            <td>{{ contact.email }}</td>
+            <td>{{ contact.phone }}</td>
+
+            <td>{{contact.created_at}} </td>
+ 
+
+            
+
+        </tr>
+
+    {% endfor %}
+
+    </tbody>
+
+</table>
+
+</div>
+
+{% endblock %}
