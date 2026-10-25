@@ -11,6 +11,7 @@ The platform consists of three main components:
 - Customer API (Go)
 - Customer Admin (Django)
 - PostgreSQL
+- Default configuration are given
 
 Nginx acts as a reverse proxy and exposes the application.
 
@@ -525,16 +526,16 @@ docker compose version
 ## Clone Repository
 
 ```bash
-git clone https://github.com/<your-username>/crm-platform.git
+git clone https://github.com/arsenedev/crm-platform-go-django.git
 
-cd crm-platform
+cd crm-platform-go-django
 ```
 
 ---
 
 ## Create Environment File
 
-Create the `.env` file:
+Create the `.env` file or use .env given:
 
 ```bash
 cp .env.example .env
