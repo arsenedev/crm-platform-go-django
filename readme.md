@@ -828,7 +828,7 @@ MIT
 
 # Author
 
-**Thierry ZONGO**
+**Thierry ZOMBRE**
 
 Cloud Engineer • Kubernetes Administrator (CKA) • DevOps Engineer • Full Stack Developer
 
