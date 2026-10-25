@@ -483,3 +483,18 @@ Keep internal services private:
 8000/tcp
 
 ```
+---
+
+# License
+
+MIT
+
+---
+
+# Author
+
+**Thierry ZONGO**
+
+Cloud Engineer • Kubernetes Administrator (CKA) • DevOps Engineer • Full Stack Developer
+
+Burkina Faso 🇧🇫
