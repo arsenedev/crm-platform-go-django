@@ -484,7 +484,341 @@ Keep internal services private:
 
 ```
 ---
+# Deployment
 
+## Production Requirements
+
+The platform requires:
+
+- Docker 24+
+- Docker Compose v2+
+- Linux Server (Ubuntu 22.04 LTS recommended)
+- Minimum 2 GB RAM
+- Minimum 2 CPU cores
+
+---
+
+## Server Preparation
+
+Update the server:
+
+```bash
+sudo apt update
+sudo apt upgrade -y
+```
+
+Install Docker:
+
+```bash
+curl -fsSL https://get.docker.com | sh
+```
+
+Verify installation:
+
+```bash
+docker --version
+docker compose version
+```
+
+---
+
+## Clone Repository
+
+```bash
+git clone https://github.com/<your-username>/crm-platform.git
+
+cd crm-platform
+```
+
+---
+
+## Create Environment File
+
+Create the `.env` file:
+
+```bash
+cp .env.example .env
+```
+
+Edit it:
+
+```bash
+nano .env
+```
+
+Example:
+
+```env
+POSTGRES_DB=postgres
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=change-me
+
+POSTGRES_HOST=postgres
+POSTGRES_PORT=5432
+
+JWT_SECRET=replace-with-secure-secret
+
+ADMIN_EMAIL=admin@company.com
+ADMIN_PASSWORD=change-me
+
+DJANGO_SECRET_KEY=replace-with-secure-secret
+
+DJANGO_DEBUG=False
+
+DJANGO_ALLOWED_HOSTS=crm.example.com
+
+CRM_API_URL=http://customer-api:8080
+
+GIN_MODE=release
+```
+
+---
+
+## Build Containers
+
+```bash
+docker compose build
+```
+
+---
+
+## Start Application
+
+```bash
+docker compose up -d
+```
+
+Verify:
+
+```bash
+docker compose ps
+```
+
+Expected services:
+
+```text
+crm-postgres
+customer-api
+customer-admin
+nginx
+```
+
+---
+
+## Check Logs
+
+All services:
+
+```bash
+docker compose logs -f
+```
+
+API logs:
+
+```bash
+docker compose logs -f customer-api
+```
+
+Django logs:
+
+```bash
+docker compose logs -f customer-admin
+```
+
+PostgreSQL logs:
+
+```bash
+docker compose logs -f postgres
+```
+
+Nginx logs:
+
+```bash
+docker compose logs -f nginx
+```
+
+---
+
+## Verify Database
+
+Connect to PostgreSQL:
+
+```bash
+docker exec -it crm-postgres psql -U postgres
+```
+
+List tables:
+
+```sql
+\dt
+```
+
+Expected tables:
+
+```text
+users
+customers
+contacts
+audit_logs
+```
+
+---
+
+## Verify Services
+
+### CRM Admin
+
+```text
+http://localhost
+```
+
+or
+
+```text
+http://<server-ip>
+```
+
+### API
+
+Internal Docker URL:
+
+```text
+http://customer-api:8080
+```
+
+---
+
+## Upgrade Application
+
+Pull latest changes:
+
+```bash
+git pull
+```
+
+Rebuild:
+
+```bash
+docker compose up -d --build
+```
+
+---
+
+## Database Reset
+
+WARNING: This operation removes all application data.
+
+Stop and remove containers, networks and volumes:
+
+```bash
+docker compose down -v
+```
+
+Recreate everything:
+
+```bash
+docker compose up --build
+```
+
+PostgreSQL will automatically execute:
+
+```text
+database/init/
+├── 001_user-table.sql
+├── 002_customer-table.sql
+├── 003_contact-table.sql
+└── 004_audit-table.sql
+```
+
+---
+
+## Backup Database
+
+Create backup:
+
+```bash
+docker exec crm-postgres \
+pg_dump -U postgres postgres \
+> backup.sql
+```
+
+---
+
+## Restore Database
+
+```bash
+docker exec -i crm-postgres \
+psql -U postgres postgres \
+< backup.sql
+```
+
+---
+
+## Recommended Production Architecture
+
+```text
+Internet
+    │
+    ▼
+
+  Nginx
+ 80 / 443
+
+    │
+
+ ┌──┴──────────────┐
+ │                 │
+
+ ▼                 ▼
+
+Django Admin    Customer API
+    8000            8080
+
+         │
+
+         ▼
+
+     PostgreSQL
+        5432
+```
+
+Recommended exposed ports:
+
+```text
+80/tcp
+443/tcp
+```
+
+Internal-only services:
+
+```text
+8000/tcp
+8080/tcp
+5432/tcp
+```
+
+---
+
+## Health Check Commands
+
+Verify PostgreSQL:
+
+```bash
+docker exec crm-postgres \
+pg_isready -U postgres
+```
+
+Verify API:
+
+```bash
+curl http://localhost/api/v1/users
+```
+
+Verify Admin:
+
+```bash
+curl http://localhost/login/
+```
 # License
 
 MIT
