@@ -1,0 +1,192 @@
+
+stages:
+  - test
+  - package
+  - deploy
+
+variables:
+  DOCKER_HOST: "unix:///var/run/docker.sock"
+  DOCKER_TLS_CERTDIR: ""
+
+  GO_IMAGE: "$CI_REGISTRY_IMAGE/customer-api:$CI_COMMIT_SHA"
+  DJANGO_IMAGE: "$CI_REGISTRY_IMAGE/customer-frontend:$CI_COMMIT_SHA"
+
+  TRIVY_IMAGE: "aquasec/trivy:0.64.1"
+
+  GIT_DEPTH: "20"
+
+workflow:
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+    - when: never
+
+
+# ------------------------------------------
+# GO TESTS
+# ------------------------------------------
+
+test_go:
+  stage: test
+
+  image: golang:1.26.3-alpine
+
+  script:
+    - cd customer-api
+    - go mod download
+    - go vet ./...
+    - go test -count=1 ./...
+
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+
+
+# ------------------------------------------
+# DJANGO TESTS
+# ------------------------------------------
+
+test_django:
+  stage: test
+
+  image: python:3.11-slim
+
+  before_script:
+    - cd customer-frontend
+    - pip install --no-cache-dir -r requirements.txt
+
+  script:
+    - python -m compileall -q .
+    - python manage.py test
+
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+
+
+# ------------------------------------------
+# BUILD + TRIVY + PUSH
+# ------------------------------------------
+
+build_scan_publish:
+  stage: package
+
+  image: docker:27-cli
+
+  script:
+
+    # Docker Engine verification
+    - docker info
+
+    # Registry authentication
+    - echo "$CI_REGISTRY_PASSWORD" |
+      docker login "$CI_REGISTRY"
+      -u "$CI_REGISTRY_USER"
+      --password-stdin
+
+    # Build Go image
+    - docker build
+      --pull
+      -t "$GO_IMAGE"
+      ./customer-api
+
+    # Build Django image
+    - docker build
+      --pull
+      -t "$DJANGO_IMAGE"
+      ./customer-frontend
+
+    # Scan Go image
+    - docker run --rm
+      -v /var/run/docker.sock:/var/run/docker.sock
+      "$TRIVY_IMAGE"
+      image
+      --image-src docker
+      --scanners vuln
+      --severity HIGH,CRITICAL
+      --exit-code 1
+      "$GO_IMAGE"
+
+    # Scan Django image
+    - docker run --rm
+      -v /var/run/docker.sock:/var/run/docker.sock
+      "$TRIVY_IMAGE"
+      image
+      --image-src docker
+      --scanners vuln
+      --severity HIGH,CRITICAL
+      --exit-code 1
+      "$DJANGO_IMAGE"
+
+    # Push only after both scans succeed
+    - docker push "$GO_IMAGE"
+    - docker push "$DJANGO_IMAGE"
+
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+
+
+# ------------------------------------------
+# PRODUCTION DEPLOYMENT
+# ------------------------------------------
+
+deploy_production:
+  stage: deploy
+
+  image: docker:27-cli
+
+  environment:
+    name: production
+
+  resource_group: crm-production
+
+  before_script:
+    - apk add --no-cache rsync docker-cli-compose
+
+  script:
+
+    # Required variables
+    - test -n "$COMPOSE_PROJECT_NAME"
+    - test -n "$APP_DIR"
+
+    # Check persistent environment file
+    - test -f "$APP_DIR/.env"
+
+    # Copy application files without overwriting .env
+    - mkdir -p "$APP_DIR"
+    - rsync -a
+      --exclude='/.git/'
+      --exclude='/.env'
+      ./ "$APP_DIR/"
+
+    # Registry authentication
+    - echo "$CI_REGISTRY_PASSWORD" |
+      docker login "$CI_REGISTRY"
+      -u "$CI_REGISTRY_USER"
+      --password-stdin
+
+    # Image references
+    - export CRM_API_IMAGE="$GO_IMAGE"
+    - export CRM_FRONTEND_IMAGE="$DJANGO_IMAGE"
+
+    # Preserve the existing Compose project identity
+    - cd "$APP_DIR"
+
+    # Validate Compose configuration
+    - docker compose -p "$COMPOSE_PROJECT_NAME"
+      config --quiet
+
+    # Pull new images
+    - docker compose -p "$COMPOSE_PROJECT_NAME" pull
+
+    # Apply the new application version
+    - docker compose -p "$COMPOSE_PROJECT_NAME"
+      up -d --remove-orphans
+
+    # Run Django database migrations
+    - docker compose -p "$COMPOSE_PROJECT_NAME"
+      exec -T customer-admin python manage.py migrate --noinput
+
+    # Display final status
+    - docker compose -p "$COMPOSE_PROJECT_NAME" ps
+
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      when: on_success
