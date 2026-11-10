@@ -1,10 +1,10 @@
 package auth
 
 import (
-	"company/customer-api/internal/audit"
-	"company/customer-api/internal/user"
-	"company/customer-api/pkg/logger"
-	"company/customer-api/pkg/security"
+	"arsenedev/customer-api/internal/audit"
+	"arsenedev/customer-api/internal/user"
+	"arsenedev/customer-api/pkg/logger"
+	"arsenedev/customer-api/pkg/security"
 
 	"context"
 

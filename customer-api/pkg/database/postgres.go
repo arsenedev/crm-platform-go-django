@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"company/customer-api/pkg/config"
+	"arsenedev/customer-api/pkg/config"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )

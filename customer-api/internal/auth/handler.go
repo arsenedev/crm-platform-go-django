@@ -3,7 +3,7 @@ package auth
 import (
 	"net/http"
 
-	jwtpkg "company/customer-api/pkg/jwt"
+	jwtpkg "arsenedev/customer-api/pkg/jwt"
 
 	"github.com/gin-gonic/gin"
 )

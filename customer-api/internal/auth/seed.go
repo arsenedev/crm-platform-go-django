@@ -5,9 +5,9 @@ import (
 	"log"
 	"os"
 
-	"company/customer-api/pkg/logger"
+	"arsenedev/customer-api/pkg/logger"
 
-	"company/customer-api/internal/user"
+	"arsenedev/customer-api/internal/user"
 )
 
 func SeedAdmin(

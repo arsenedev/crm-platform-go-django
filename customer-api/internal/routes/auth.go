@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"company/customer-api/internal/auth"
+	"arsenedev/customer-api/internal/auth"
 
 	"github.com/gin-gonic/gin"
 )

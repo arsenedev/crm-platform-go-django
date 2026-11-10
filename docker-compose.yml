@@ -3,7 +3,7 @@ services:
   postgres:
     image: postgres:16
 
-    container_name: crm-postgres
+    container_name: crm-postgresql
 
     env_file:
       - .env
@@ -14,7 +14,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
 
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_datas:/var/lib/postgresql/data
       - ./database/init:/docker-entrypoint-initdb.d
 
     healthcheck:
@@ -30,7 +30,7 @@ services:
     build:
       context: ./customer-api
 
-    container_name: customer-api
+    container_name: customer-apis
 
     env_file:
       - .env
@@ -63,7 +63,7 @@ services:
     build:
       context: ./customer-frontend
 
-    container_name: customer-admin
+    container_name: customer-admins
 
     env_file:
       - .env
@@ -86,7 +86,7 @@ services:
   nginx:
     image: nginx:alpine
 
-    container_name: crm-nginx
+    container_name: crm-nginxs
 
     depends_on:
       - customer-api
@@ -103,4 +103,4 @@ services:
 
 
 volumes:
-  postgres_data:
+  postgres_datas:

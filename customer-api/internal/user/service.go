@@ -3,10 +3,10 @@ package user
 import (
 	"context"
 
-	"company/customer-api/pkg/security"
+	"arsenedev/customer-api/pkg/security"
 
-	"company/customer-api/internal/audit"
-	"company/customer-api/pkg/logger"
+	"arsenedev/customer-api/internal/audit"
+	"arsenedev/customer-api/pkg/logger"
 
 	"go.uber.org/zap"
 

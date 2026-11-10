@@ -4,16 +4,16 @@ import (
 	"context"
 	"log"
 
-	"company/customer-api/internal/audit"
-	"company/customer-api/internal/auth"
-	"company/customer-api/internal/contact"
-	"company/customer-api/internal/customer"
-	"company/customer-api/internal/routes"
-	"company/customer-api/internal/user"
+	"arsenedev/customer-api/internal/audit"
+	"arsenedev/customer-api/internal/auth"
+	"arsenedev/customer-api/internal/contact"
+	"arsenedev/customer-api/internal/customer"
+	"arsenedev/customer-api/internal/routes"
+	"arsenedev/customer-api/internal/user"
 
-	"company/customer-api/pkg/config"
-	"company/customer-api/pkg/database"
-	"company/customer-api/pkg/logger"
+	"arsenedev/customer-api/pkg/config"
+	"arsenedev/customer-api/pkg/database"
+	"arsenedev/customer-api/pkg/logger"
 
 	"github.com/gin-gonic/gin"
 )

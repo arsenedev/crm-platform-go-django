@@ -1,4 +1,4 @@
-module company/customer-api
+module arsenedev/customer-api
 
 go 1.26.3
 

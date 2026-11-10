@@ -3,7 +3,7 @@ package user
 import (
 	"context"
 
-	"company/customer-api/pkg/logger"
+	"arsenedev/customer-api/pkg/logger"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"go.uber.org/zap"

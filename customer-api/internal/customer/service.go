@@ -1,10 +1,10 @@
 package customer
 
 import (
-	"company/customer-api/pkg/logger"
+	"arsenedev/customer-api/pkg/logger"
 	"context"
 
-	"company/customer-api/internal/audit"
+	"arsenedev/customer-api/internal/audit"
 
 	"go.uber.org/zap"
 
